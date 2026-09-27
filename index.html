@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Саша — Личный агент роста</title>
+<style>
+  :root {
+    --bg: #1C1520;
+    --bg2: #231A28;
+    --bg3: #2A1F30;
+    --border: rgba(180,140,200,0.12);
+    --purple: #B48AC8;
+    --purple-light: #D4B8E8;
+    --gold: #C8963E;
+    --gold-light: #E8B85A;
+    --rose: #C87890;
+    --text: #E8E0F0;
+    --text-muted: #9A8AA8;
+    --text-dim: #6A5A78;
+    --green: #7AB88A;
+    --blue: #7AA8C8;
+    --radius: 12px;
+    --radius-sm: 8px;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #2A1535 0%, #1C1520 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .avatar {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--purple), var(--gold));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .header-info h1 {
+    font-size: 16px; font-weight: 600; color: var(--text);
+  }
+  .header-info p {
+    font-size: 12px; color: var(--text-muted);
+  }
+
+  .tabs {
+    display: flex; gap: 6px; overflow-x: auto;
+    scrollbar-width: none; padding-bottom: 2px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .tab.active {
+    background: var(--purple);
+    color: var(--bg);
+    border-color: var(--purple);
+    font-weight: 600;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 0 120px;
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 16px; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--purple-light);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-body {
+    font-size: 13px; color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .card-body strong { color: var(--text); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 500;
+    margin: 3px 3px 0 0;
+  }
+
+  .badge-purple { background: rgba(180,138,200,0.15); color: var(--purple-light); }
+  .badge-gold { background: rgba(200,150,62,0.15); color: var(--gold-light); }
+  .badge-rose { background: rgba(200,120,144,0.15); color: var(--rose); }
+  .badge-green { background: rgba(122,184,138,0.15); color: var(--green); }
+
+  .practice-item {
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--purple);
+  }
+
+  .practice-item.gold { border-left-color: var(--gold); }
+  .practice-item.rose { border-left-color: var(--rose); }
+  .practice-item.green { border-left-color: var(--green); }
+  .practice-item.blue { border-left-color: var(--blue); }
+
+  .practice-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--text); margin-bottom: 4px;
+  }
+
+  .practice-desc {
+    font-size: 12px; color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .step {
+    display: flex; gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 24px; height: 24px; flex-shrink: 0;
+    background: var(--purple);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--bg);
+    margin-top: 1px;
+  }
+
+  .step-content { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+
+  /* CHAT */
+  .chat-messages {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 300px;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .msg-agent {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-user {
+    background: var(--purple);
+    color: var(--bg);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+
+  .msg-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    padding: 0 2px;
+  }
+
+  .agent-label { text-align: left; }
+  .user-label { text-align: right; }
+
+  .typing {
+    display: flex; gap: 4px; align-items: center;
+    padding: 12px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    width: fit-content;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    animation: pulse 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(1); }
+  }
+
+  /* INPUT */
+  .chat-input-wrap {
+    position: fixed;
+    bottom: env(safe-area-inset-bottom, 0px);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex; gap: 10px; align-items: flex-end;
+    z-index: 100;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.4;
+    max-height: 120px;
+    min-height: 40px;
+  }
+
+  .chat-input::placeholder { color: var(--text-dim); }
+  .chat-input:focus { border-color: var(--purple); }
+
+  .send-btn {
+    width: 40px; height: 40px; flex-shrink: 0;
+    background: var(--purple);
+    border: none; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+  .send-btn:hover { background: var(--purple-light); }
+  .send-btn:disabled { background: var(--bg3); cursor: default; }
+
+  /* QUICK ACTIONS */
+  .quick-actions {
+    display: flex; gap: 8px;
+    overflow-x: auto; padding: 0 16px 12px;
+    scrollbar-width: none;
+  }
+  .quick-actions::-webkit-scrollbar { display: none; }
+
+  .quick-btn {
+    padding: 8px 14px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px; color: var(--text-muted);
+    cursor: pointer; white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .quick-btn:hover {
+    border-color: var(--purple);
+    color: var(--purple-light);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px; background: var(--border);
+    margin: 16px 0;
+  }
+
+  h3 {
+    font-size: 14px; font-weight: 600;
+    color: var(--purple-light);
+    margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  /* BOOK LIST */
+  .book {
+    display: flex; gap: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+  }
+
+  .book-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--bg3);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .book-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .book-author { font-size: 11px; color: var(--text-muted); margin: 2px 0 4px; }
+  .book-why { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* TRACKER */
+  .tracker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .tracker-day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--text-dim);
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .tracker-day.done {
+    background: rgba(180,138,200,0.2);
+    border-color: var(--purple);
+    color: var(--purple-light);
+  }
+
+  .tracker-day.today {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .habit-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .habit-check {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%; flex-shrink: 0;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .habit-check.checked {
+    background: var(--purple);
+    border-color: var(--purple);
+  }
+
+  .habit-name { flex: 1; font-size: 13px; color: var(--text); }
+  .habit-streak { font-size: 11px; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="avatar">✦</div>
+    <div class="header-info">
+      <h1>Агент роста · Саша</h1>
+      <p>Натальная карта · Деньги · Блог · Практики</p>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('practices')">🌙 Практики</div>
+    <div class="tab" onclick="showTab('money')">💰 Деньги</div>
+    <div class="tab" onclick="showTab('blog')">📱 Блог</div>
+    <div class="tab" onclick="showTab('books')">📚 Книги</div>
+    <div class="tab" onclick="showTab('tracker')">✓ Трекер</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- PRACTICES -->
+  <div class="section active" id="section-practices">
+    <div class="section-label">Психологические практики</div>
+
+    <div class="practice-item">
+      <div class="practice-title">🪞 Практика на самооценку — "Свидетель"</div>
+      <div class="practice-desc">Каждый вечер пиши 3 вещи которые ты сделала хорошо сегодня. Не достижения — а поступки. "Я внимательно выслушала клиентку". "Я написала главу несмотря на усталость". Солнце в 12-м доме не видит себя — эта практика буквально тренирует видеть. 21 день минимум.</div>
+    </div>
+
+    <div class="practice-item rose">
+      <div class="practice-title">💸 Практика на деньги — "Денежный дневник"</div>
+      <div class="practice-desc">Каждое утро пиши одно предложение: "Сегодня я зарабатываю деньги через ___". Заполняй конкретно — через расклад, через пост, через гайд. Плутон во 2-м работает через намерение + действие. Это соединяет их.</div>
+    </div>
+
+    <div class="practice-item gold">
+      <div class="practice-title">🎯 Практика на завершение — "Один процент"</div>
+      <div class="practice-desc">Проблема не в мотивации — в размере шага. Каждый день делай одно микродействие по незаконченному проекту. Одна страница гайда. Одно видео. Один пост. Уран в 4-м доме создаёт хаос — система маленьких шагов его нейтрализует.</div>
+    </div>
+
+    <div class="practice-item green">
+      <div class="practice-title">🌱 Практика на публичность — "Выйди на 1 минуту"</div>
+      <div class="practice-desc">Солнце в 12-м доме прячется. Тренировка: каждый день одно маленькое публичное действие. Ответить в комментарии. Сделать Stories от себя. Написать одному человеку. Не пост, не Reel — просто быть видимой 1 раз в день.</div>
+    </div>
+
+    <div class="practice-item blue">
+      <div class="practice-title">⚖️ Практика на баланс — "Тело знает"</div>
+      <div class="practice-desc">Луна в Весах чувствует дисбаланс телесно. Утром — одна минута: закрой глаза, почувствуй тело. Где напряжение? Это твой индикатор. Напряжение в груди — эмоциональный блок. В плечах — слишком много несёшь. В животе — страх. Это карта твоего дня.</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Эзотерические практики</div>
+
+    <div class="practice-item">
+      <div class="practice-title">🌑 Ритуал на новолуние — намерение</div>
+      <div class="practice-desc">В день новолуния: зажги свечу. Напиши на бумаге одно намерение на месяц — конкретное, в настоящем времени ("я зарабатываю X рублей в месяц"). Положи под свечу. Пока горит — не говори ни с кем. После — сожги или убери в укромное место. Повторяй каждое новолуние.</div>
+    </div>
+
+    <div class="practice-item gold">
+      <div class="practice-title">🌕 Ритуал на полнолуние — отпускание</div>
+      <div class="practice-desc">В полнолуние: напиши что хочешь отпустить — страх, убеждение, человека, ситуацию. Одно предложение. Сожги или разорви и выброси. Скажи вслух: "Я отпускаю это. Я освобождаю место для нового." Плутон во 2-м трансформирует через отпускание.</div>
+    </div>
+
+    <div class="practice-item rose">
+      <div class="practice-title">✦ Расклад на неделю — каждое воскресенье</div>
+      <div class="practice-desc">3 карты: что уходит, что приходит, что требует внимания. Не гадание — настройка фокуса. Запиши в заметки. В конце недели проверь — что совпало? Это тренирует интуицию и связь с собой.</div>
+    </div>
+
+    <div class="practice-item green">
+      <div class="practice-title">💚 Практика на деньги через тело</div>
+      <div class="practice-desc">Возьми купюру или монету в руки. Закрой глаза. Почувствуй — что ты чувствуешь? Страх? Радость? Тревогу? Это твоё денежное убеждение в чистом виде. Потом скажи вслух: "Деньги — это энергия. Я открыта к ней." Делай раз в неделю — отслеживай как меняется ощущение.</div>
+    </div>
+  </div>
+
+  <!-- MONEY -->
+  <div class="section" id="section-money">
+    <div class="section-label">Система дохода</div>
+
+    <div class="card">
+      <div class="card-title">💰 Три уровня продуктов</div>
+      <div class="card-body">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Низкий чек — PDF гайд</div>
+            <div class="step-desc">490–690₽ · продаётся пока спишь · ссылка в шапке · "Сама себе мешаю"</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Средний чек — расклад</div>
+            <div class="step-desc">1200₽ · основная услуга · 20 раскладов = 24 000₽</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Высокий чек — курс / группа</div>
+            <div class="step-desc">3000–15 000₽ · раз в квартал · 20 человек = 60–300 000₽</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Дорожная карта дохода</div>
+      <div class="card-body">
+        <div class="practice-item">
+          <div class="practice-title">Август 2026</div>
+          <div class="practice-desc">Запустить PDF-гайд. Продавать расклады через личный круг. Цель: 10 000–15 000₽</div>
+        </div>
+        <div class="practice-item gold">
+          <div class="practice-title">Сентябрь–Октябрь</div>
+          <div class="practice-desc">Вырасти до 300–500 подписчиков. Системные продажи через Stories 2× в неделю. Цель: 25 000–35 000₽</div>
+        </div>
+        <div class="practice-item green">
+          <div class="practice-title">Ноябрь–Декабрь</div>
+          <div class="practice-desc">Запустить мини-курс или группу. Новогодний сезон — подарочные консультации. Цель: 70 000–120 000₽</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 Работа с денежным мышлением</div>
+      <div class="card-body">
+        <strong>Правило 1.</strong> Не оценивай продукт по своей цене — оценивай по ценности для клиента.<br><br>
+        <strong>Правило 2.</strong> Каждое повышение цены объявляй без извинений. Просто факт.<br><br>
+        <strong>Правило 3.</strong> Откладывай 10% с каждого прихода сразу. Плутон во 2-м учится стабильности через маленькие действия.<br><br>
+        <strong>Правило 4.</strong> Продавай каждый день. Не каждый день продаётся — но каждый день предлагай.
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG -->
+  <div class="section" id="section-blog">
+    <div class="section-label">Контент-система</div>
+
+    <div class="card">
+      <div class="card-title">📱 Формула контента</div>
+      <div class="card-body">
+        <span class="badge badge-purple">2× Reels в неделю</span>
+        <span class="badge badge-gold">1× продающие Stories</span>
+        <span class="badge badge-rose">3× обычные Stories</span>
+        <span class="badge badge-green">1× личный пост</span>
+        <br><br>
+        Не больше — качество важнее количества на старте.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎬 5 типов Reels которые работают</div>
+      <div class="card-body">
+        <div class="practice-item">
+          <div class="practice-title">Личная история</div>
+          <div class="practice-desc">Почему ты в таро. Что изменилось. Конкретный момент. Без карт в руках.</div>
+        </div>
+        <div class="practice-item gold">
+          <div class="practice-title">Демо-расклад</div>
+          <div class="practice-desc">Показываешь одну позицию расклада. Вопрос → карта → что это значит. CTA в конце.</div>
+        </div>
+        <div class="practice-item rose">
+          <div class="practice-title">Практика с действием</div>
+          <div class="practice-desc">Крупный план рук. Пишешь фразу. Тянешь карту. Аудитория делает вместе.</div>
+        </div>
+        <div class="practice-item green">
+          <div class="practice-title">Разрушение мифа</div>
+          <div class="practice-desc">"Таро — это не гадание". "Карты не предсказывают будущее". Твоя философия.</div>
+        </div>
+        <div class="practice-item blue">
+          <div class="practice-title">Психологический крючок</div>
+          <div class="practice-desc">"Почему ты снова выбрала не того". "Почему знаешь что делать но не делаешь".</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Продающие Stories — формула</div>
+      <div class="card-body">
+        Stories 1: личное — от себя, без продажи<br>
+        Stories 2: польза — одна мысль или вопрос<br>
+        Stories 3: оффер — конкретно, коротко, цена, куда писать<br><br>
+        <strong>Никогда не продавай в первой Stories подряд.</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKS -->
+  <div class="section" id="section-books">
+    <div class="section-label">На деньги и мышление</div>
+
+    <div class="book">
+      <div class="book-icon">💰</div>
+      <div>
+        <div class="book-title">Думай и богатей</div>
+        <div class="book-author">Наполеон Хилл</div>
+        <div class="book-why">База денежного мышления. Плутон во 2-м — деньги через убеждения. Читать медленно, делать упражнения.</div>
+      </div>
+    </div>
+
+    <div class="book">
+      <div class="book-icon">🧠</div>
+      <div>
+        <div class="book-title">Психология денег</div>
+        <div class="book-author">Морган Хаузел</div>
+        <div class="book-why">Как мышление влияет на финансовые решения. Без сухой теории — через истории.</div>
+      </div>
+    </div>
+
+    <div class="book">
+      <div class="book-icon">✨</div>
+      <div>
+        <div class="book-title">Большой магический скачок</div>
+        <div class="book-author">Элизабет Гилберт</div>
+        <div class="book-why">Про творчество без страха. Для Солнца в 12-м доме — учит выходить на свет.</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:16px">На самооценку и блоки</div>
+
+    <div class="book">
+      <div class="book-icon">🪞</div>
+      <div>
+        <div class="book-title">Шесть столпов самооценки</div>
+        <div class="book-author">Натаниэль Бранден</div>
+        <div class="book-why">Лучшая книга по теме. Упражнения которые реально работают. Для Солнца в 12-м — обязательно.</div>
+      </div>
+    </div>
+
+    <div class="book">
+      <div class="book-icon">🎭</div>
+      <div>
+        <div class="book-title">Дары несовершенства</div>
+        <div class="book-author">Брене Браун</div>
+        <div class="book-why">Про уязвимость и публичность. Почему показывать себя настоящей — это сила, не слабость.</div>
+      </div>
+    </div>
+
+    <div class="book">
+      <div class="book-icon">🔄</div>
+      <div>
+        <div class="book-title">Привычки на всю жизнь</div>
+        <div class="book-author">Джеймс Клир (Атомные привычки)</div>
+        <div class="book-why">Для Урана в 4-м — как создать стабильность через микродействия. Решает проблему "начинаю и бросаю".</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:16px">На блог и продажи</div>
+
+    <div class="book">
+      <div class="book-icon">📱</div>
+      <div>
+        <div class="book-title">Продающий контент</div>
+        <div class="book-author">Ольга Берек</div>
+        <div class="book-why">Русскоязычная книга про Instagram-контент. Практично, без воды.</div>
+      </div>
+    </div>
+
+    <div class="book">
+      <div class="book-icon">💬</div>
+      <div>
+        <div class="book-title">Сторителлинг</div>
+        <div class="book-author">Аннет Симмонс</div>
+        <div class="book-why">Меркурий в Скорпионе + Юпитер в 3-м — твоя сила в истории. Эта книга учит её рассказывать.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKER -->
+  <div class="section" id="section-tracker">
+    <div class="section-label">Привычки на сегодня</div>
+
+    <div id="habits-list"></div>
+
+    <div class="divider"></div>
+    <div class="section-label">Прогресс недели</div>
+    <div class="tracker-grid" id="tracker-grid"></div>
+
+    <div class="card">
+      <div class="card-title">📊 Мои цели</div>
+      <div class="card-body">
+        <div class="practice-item">
+          <div class="practice-title">Август</div>
+          <div class="practice-desc">✓ Запустить PDF-гайд &nbsp;·&nbsp; ✓ Продать 5 раскладов &nbsp;·&nbsp; ✓ 2 Reels в неделю</div>
+        </div>
+        <div class="practice-item gold">
+          <div class="practice-title">Сентябрь</div>
+          <div class="practice-desc">300 подписчиков &nbsp;·&nbsp; 20 раскладов &nbsp;·&nbsp; Написать половину гайда</div>
+        </div>
+        <div class="practice-item green">
+          <div class="practice-title">Декабрь</div>
+          <div class="practice-desc">500+ подписчиков &nbsp;·&nbsp; 70 000₽+ в месяц &nbsp;·&nbsp; Первый курс запущен</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<script>
+// Tab switching
+function showTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// REMOVE CHAT PLACEHOLDER
+const SYSTEM = `Ты личный агент роста и наставник Саши Вольф.
+
+Данные о Саше:
+- Натальная карта: Солнце 15° Скорпион (12-й дом), Луна 7° Весы (11-й дом), Меркурий 19° Скорпион (12-й дом), Венера 11° Весы (11-й дом), Марс 4° Дева (10-й дом), Юпитер 13° Козерог (3-й дом), Сатурн 1° Овен (6-й дом), Уран 0° Водолей (4-й дом), Нептун 25° Козерог (3-й дом), Плутон 2° Стрелец (2-й дом), Асцендент 29° Скорпион, МС 16° Дева
+- Ситуация: в декрете, новорождённый ребёнок, новый Instagram аккаунт с 3 подписчиками, таролог с подходом психологической работы
+- Сильные качества: проницательность, глубокое мышление, работа со словом, эмпатия через анализ, удержание чужой боли
+- Слабые места: самооценка (Солнце в 12-м), публичность, незавершённые проекты, нестабильность, просьба о помощи
+- Продукты: расклады 1200₽, создаётся PDF-гайд "Сама себе мешаю", планируется курс
+- Аудитория: женщины 25-44, тема самореализации, блоки, трансформация
+- Текущие транзиты август 2026: Юпитер в 10-м доме (публичность), Меркурий прямой (запускай), Сатурн в 6-м (режим и труд)
+
+Твоя роль:
+- Давай конкретные практические советы с учётом натальной карты
+- Связывай астрологию с реальными действиями
+- Отвечай коротко и по делу, без воды
+- Если про деньги — давай конкретные цифры и шаги
+- Если про блог — давай конкретные темы и форматы
+- Если про практику — давай чёткую инструкцию
+- Если про эзотерику — давай ритуалы которые можно сделать дома
+- Говори на русском, обращайся на "ты"
+- Никогда не начинай с "Конечно!", "Отлично!", "Замечательно!"`;
+
+// HABITS TRACKER
+const habits = [
+  { id: 'h1', name: '3 вещи что сделала хорошо', emoji: '🪞' },
+  { id: 'h2', name: 'Денежный дневник', emoji: '💸' },
+  { id: 'h3', name: 'Один шаг по гайду', emoji: '📝' },
+  { id: 'h4', name: 'Одно публичное действие', emoji: '✨' },
+  { id: 'h5', name: '10 минут движения', emoji: '🌿' },
+  { id: 'h6', name: 'Написать 3 людям в личку', emoji: '💬' },
+];
+
+const today = new Date().toDateString();
+let checkedToday = JSON.parse(localStorage.getItem('habits_' + today) || '{}');
+let streaks = JSON.parse(localStorage.getItem('streaks') || '{}');
+
+function renderHabits() {
+  const list = document.getElementById('habits-list');
+  list.innerHTML = '';
+  habits.forEach(h => {
+    const done = checkedToday[h.id];
+    const streak = streaks[h.id] || 0;
+    const row = document.createElement('div');
+    row.className = 'habit-row';
+    row.innerHTML = `
+      <div class="habit-check ${done ? 'checked' : ''}" onclick="toggleHabit('${h.id}')">
+        ${done ? '✓' : ''}
+      </div>
+      <div class="habit-name">${h.emoji} ${h.name}</div>
+      ${streak > 1 ? `<div class="habit-streak">🔥 ${streak}</div>` : ''}
+    `;
+    list.appendChild(row);
+  });
+}
+
+function toggleHabit(id) {
+  checkedToday[id] = !checkedToday[id];
+  localStorage.setItem('habits_' + today, JSON.stringify(checkedToday));
+  if (checkedToday[id]) {
+    streaks[id] = (streaks[id] || 0) + 1;
+  } else {
+    streaks[id] = Math.max(0, (streaks[id] || 1) - 1);
+  }
+  localStorage.setItem('streaks', JSON.stringify(streaks));
+  renderHabits();
+}
+
+// Week tracker
+function renderTracker() {
+  const grid = document.getElementById('tracker-grid');
+  grid.innerHTML = '';
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const now = new Date();
+  const dayOfWeek = (now.getDay() + 6) % 7;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - dayOfWeek + i);
+    const isToday = d.toDateString() === today;
+    const key = 'habits_' + d.toDateString();
+    const dayData = JSON.parse(localStorage.getItem(key) || '{}');
+    const count = Object.values(dayData).filter(Boolean).length;
+    const cell = document.createElement('div');
+    cell.className = 'tracker-day' + (isToday ? ' today' : '') + (count >= 4 ? ' done' : '');
+    cell.innerHTML = `<span>${days[i]}</span>`;
+    cell.title = `${count}/${habits.length} привычек`;
+    grid.appendChild(cell);
+  }
+}
+
+renderHabits();
+renderTracker();
+</script>
+</body>
+</html>
